@@ -16,10 +16,26 @@ public class MainActivity extends AppCompatActivity implements AddCityFragment.A
     private ListView cityList;
     private CityArrayAdapter cityAdapter;
 
+//    @Override
+//    public void addCity(City city) {
+//        // add the new city into the ArrayAdapter<City> instance
+//        cityAdapter.add(city);
+//        cityAdapter.notifyDataSetChanged();
+//    }
+
+
     @Override
-    public void addCity(City city) {
-        // add the new city into the ArrayAdapter<City> instance
-        cityAdapter.add(city);
+    public void onCityListClick(City city, int position) {
+        // if position is -1, then the function is Add City
+        // else, the function is Update City
+        if (position == -1) {
+            dataList.add(city);
+        }
+
+        else {
+            dataList.set(position, city);
+        }
+
         cityAdapter.notifyDataSetChanged();
     }
 
@@ -42,10 +58,20 @@ public class MainActivity extends AppCompatActivity implements AddCityFragment.A
         cityAdapter = new CityArrayAdapter(this, dataList);
         cityList.setAdapter(cityAdapter);
 
-        // button logic
+        // FAB logic (Add City function)
         FloatingActionButton fab = findViewById(R.id.button_add_city);
         fab.setOnClickListener(view -> {
-            new AddCityFragment().show(getSupportFragmentManager(), "Add City");
+            AddCityFragment.newInstance(null, -1).show(getSupportFragmentManager(), "Add City");
         });
+
+        // ListView logic (Update City function)
+        cityList.setOnItemClickListener((parent, view, position, id) -> {
+            // get the city clicked
+            City editingCity = dataList.get(position);
+
+            // pass args to fragment
+            AddCityFragment.newInstance(editingCity, position).show(getSupportFragmentManager(), "Edit City");
+        });
+
     }
 }

@@ -13,14 +13,19 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
 public class AddCityFragment extends DialogFragment {
+    public static AddCityFragment newInstance(City city, int position) {
+        Bundle args = new Bundle();
+        args.putSerializable("city", city);
+        args.putInt("position", position);
 
-    public AddCityFragment(AddCityDialogListener listener) {
-        this.listener = listener;
+        AddCityFragment fragment = new AddCityFragment();
+        fragment.setArguments(args);
+        return fragment;
     }
 
     // defining an interface for this
     interface AddCityDialogListener {
-        void addCity(City city);
+        void onCityListClick(City city, int position);
     }
 
     private AddCityDialogListener listener;
@@ -50,18 +55,39 @@ public class AddCityFragment extends DialogFragment {
         EditText cityEdit = view.findViewById(R.id.edit_text_city_text);
         EditText provinceEdit = view.findViewById(R.id.edit_text_province_text);
 
+        // check if the current action is to edit a city
+        // get args
+        Bundle args = getArguments();
+        City existingCity = null;
+        int pos = -1;
+
+        // check if args are not null
+        if (args != null) {
+            existingCity = (City) args.getSerializable("city");
+            pos = args.getInt("position");
+        }
+
+        final int finalPos = pos;
+
+        // check if the city is not null
+        if (existingCity != null) {
+            // populate the edit texts
+            cityEdit.setText(existingCity.getName());
+            provinceEdit.setText(existingCity.getProvince());
+        }
+
         // create a builder
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 
         return builder
                 .setView(view)
-                .setTitle("Add a city")
+                .setTitle("Add / edit city")
                 .setNegativeButton("Cancel", null)
-                .setPositiveButton("Add", (dialog, id) -> {
+                .setPositiveButton("OK", (dialog, id) -> {
                     String city = cityEdit.getText().toString();
                     String province = provinceEdit.getText().toString();
 
-                    listener.addCity(new City(city, province));
+                    listener.onCityListClick(new City(city, province), finalPos);
                 })
                 .create();
     }
