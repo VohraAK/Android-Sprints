@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">ListyCityLab3</string>
+    <string name="city_textview_text">City</string>
+    <string name="province_textview_text">Province</string>
+    <string name="add_city_fragment_city_text">City</string>
+    <string name="add_city_fragment_province_text">Province</string>
+</resources>
